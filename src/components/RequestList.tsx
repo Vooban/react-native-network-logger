@@ -10,7 +10,7 @@ import { NetworkRequestInfoRow } from '../types';
 interface Props {
   requestsInfo: NetworkRequestInfoRow[];
   onPressItem: (item: NetworkRequestInfo['id']) => void;
-  options: {text: string; onPress: () => void }[];
+  options: { text: string; onPress: () => void }[];
   showDetails: boolean;
 }
 
@@ -30,7 +30,8 @@ const RequestList: React.FC<Props> = ({
       return (
         request.url.toLowerCase().includes(value) ||
         request.gqlOperation?.toLowerCase().includes(value)
-      )});
+      );
+    });
   }, [requestsInfo, searchValue]);
 
   return (
@@ -46,8 +47,8 @@ const RequestList: React.FC<Props> = ({
             {options.map(({ text, onPress }) => (
               <Button key={text} onPress={onPress} style={styles.more}>
                 {text}
-              </Button>)
-            )}
+              </Button>
+            ))}
           </View>
         )}
         data={filteredRequests}

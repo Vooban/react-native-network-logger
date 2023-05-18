@@ -69,6 +69,9 @@ const ResultItem: React.FC<Props> = ({ style, request, onPress }) => {
         >
           {request.method}
         </Text>
+        <Text style={styles.time}>{getTime(request.startTime)}</Text>
+      </View>
+      <View style={styles.leftContainer}>
         <Text
           style={[styles.status, getStatusStyles(request.status)]}
           accessibilityLabel={`Response status ${status}`}
@@ -78,7 +81,6 @@ const ResultItem: React.FC<Props> = ({ style, request, onPress }) => {
         <Text style={styles.text}>
           {request.duration > 0 ? `${request.duration}ms` : 'pending'}
         </Text>
-        <Text style={styles.time}>{getTime(request.startTime)}</Text>
       </View>
       <View style={[styles.content]}>
         <Text

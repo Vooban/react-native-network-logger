@@ -59,7 +59,7 @@ const LargeText: React.FC<{ children: string }> = ({ children }) => {
         style={[styles.content, styles.largeContent]}
         multiline
         editable={false}
-        value={children}
+        value={children?.replace(/\\n/gi, '\n')}
       />
     );
   }
