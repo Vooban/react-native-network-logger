@@ -17,6 +17,7 @@ export default class NetworkRequestInfo {
   responseURL = '';
   responseType = '';
   timeout = 0;
+  query = '';
   closeReason = '';
   messages = '';
   serverClose = undefined;
@@ -82,6 +83,22 @@ export default class NetworkRequestInfo {
     return JSON.stringify(this.parseData(data), null, 2);
   }
 
+  private parseRequestBody() {
+    if (this.requestHeaders['content-type']?.includes('application/json')) {
+      return this.parseData(this.dataSent);
+    }
+    return null;
+  }
+
+  private getQuery() {
+    const _query =
+      this.parseRequestBody()
+        ?.query?.replace(/\s+/g, ' ')
+        ?.replace(/\\n/g, '\n')
+        ?.replace(/\\"/g, '"') || '';
+    return _query.substring(0, _query.indexOf('('));
+  }
+
   public toRow(): NetworkRequestInfoRow {
     return {
       url: this.url,
@@ -91,6 +108,7 @@ export default class NetworkRequestInfo {
       status: this.status,
       duration: this.duration,
       startTime: this.startTime,
+      query: this.getQuery(),
     };
   }
 

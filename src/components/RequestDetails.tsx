@@ -59,7 +59,7 @@ const LargeText: React.FC<{ children: string }> = ({ children }) => {
         style={[styles.content, styles.largeContent]}
         multiline
         editable={false}
-        value={children?.replace(/\\n/gi, '\n')}
+        value={children}
       />
     );
   }
@@ -86,7 +86,7 @@ const RequestDetails: React.FC<Props> = ({ request, onClose }) => {
     })();
   }, [request]);
 
-  const requestBody = request.getRequestBody(!!request.gqlOperation);
+  const requestBody = request.getRequestBody(true);
 
   const getFullRequest = () => {
     let response;
