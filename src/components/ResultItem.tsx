@@ -1,11 +1,11 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import NetworkRequestInfo from '../NetworkRequestInfo';
 import { Theme, useThemedStyles, useTheme } from '../theme';
 import { backHandlerSet } from '../backHandler';
+import { NetworkRequestInfoRow } from '../types';
 
 interface Props {
-  request: NetworkRequestInfo;
+  request: NetworkRequestInfoRow;
   onPress?(): void;
   style?: any;
 }
@@ -69,6 +69,9 @@ const ResultItem: React.FC<Props> = ({ style, request, onPress }) => {
         >
           {request.method}
         </Text>
+        <Text style={styles.time}>{getTime(request.startTime)}</Text>
+      </View>
+      <View style={styles.leftContainer}>
         <Text
           style={[styles.status, getStatusStyles(request.status)]}
           accessibilityLabel={`Response status ${status}`}
@@ -78,7 +81,6 @@ const ResultItem: React.FC<Props> = ({ style, request, onPress }) => {
         <Text style={styles.text}>
           {request.duration > 0 ? `${request.duration}ms` : 'pending'}
         </Text>
-        <Text style={styles.time}>{getTime(request.startTime)}</Text>
       </View>
       <View style={[styles.content]}>
         <Text
@@ -90,13 +92,26 @@ const ResultItem: React.FC<Props> = ({ style, request, onPress }) => {
         >
           {request.url}
         </Text>
-        {gqlOperation && (
-          <View style={styles.gqlOperation}>
-            <Text style={[styles.text, styles.gqlText]}>
-              gql: {gqlOperation}
-            </Text>
-          </View>
-        )}
+        <View style={{ flexDirection: 'row' }}>
+          {request.query && (
+            <View style={styles.gqlOperation}>
+              <Text
+                style={[styles.text, styles.gqlText]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {request.query}
+              </Text>
+            </View>
+          )}
+          {gqlOperation && (
+            <View style={styles.gqlOperation}>
+              <Text style={[styles.text, styles.gqlText]}>
+                gql: {gqlOperation}
+              </Text>
+            </View>
+          )}
+        </View>
       </View>
     </MaybeTouchable>
   );
@@ -156,12 +171,12 @@ const themedStyles = (theme: Theme) =>
       backgroundColor: theme.colors.secondary,
       borderRadius: 10,
       alignSelf: 'flex-start',
-      padding: 5,
-      marginTop: 5,
+      padding: 4,
+      marginTop: 4,
     },
     gqlText: {
       color: theme.colors.onSecondary,
-      fontSize: 14,
+      fontSize: 12,
     },
   });
 

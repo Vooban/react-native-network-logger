@@ -75,7 +75,7 @@ const RequestDetails: React.FC<Props> = ({ request, onClose }) => {
     })();
   }, [request]);
 
-  const requestBody = request.getRequestBody(!!request.gqlOperation);
+  const requestBody = request.getRequestBody(true);
 
   const getFullRequest = () => {
     let response;
