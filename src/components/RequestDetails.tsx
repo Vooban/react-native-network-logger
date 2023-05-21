@@ -56,8 +56,8 @@ const LargeText: React.FC<{ children: string }> = ({ children }) => {
     <TextInput
       style={[styles.content, styles.largeContent]}
       multiline
-      editable // always editable to allow copy/paste
-      showSoftInputOnFocus // prevents keyboard from showing on focus since it's readonly
+      scrollEnabled
+      editable={false} // always readonly but allow copy/paste on both platforms
       caretHidden // hides the cursor since it's readonly
       value={children}
     />
