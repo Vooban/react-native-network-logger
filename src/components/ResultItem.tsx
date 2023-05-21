@@ -92,7 +92,7 @@ const ResultItem: React.FC<Props> = ({ style, request, onPress }) => {
         >
           {request.url}
         </Text>
-        <View style={{ flexDirection: 'row' }}>
+        <View style={styles.query}>
           {request.query && (
             <View style={styles.gqlOperation}>
               <Text
@@ -178,6 +178,7 @@ const themedStyles = (theme: Theme) =>
       color: theme.colors.onSecondary,
       fontSize: 12,
     },
+    query: { flexDirection: 'row' },
   });
 
 export default ResultItem;

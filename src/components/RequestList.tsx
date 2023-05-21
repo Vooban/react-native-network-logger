@@ -43,7 +43,7 @@ const RequestList: React.FC<Props> = ({
         keyExtractor={(item) => item.id}
         // eslint-disable-next-line react/no-unstable-nested-components
         ListHeaderComponent={() => (
-          <View style={{ flexDirection: 'row' }}>
+          <View style={styles.options}>
             {options.map(({ text, onPress }) => (
               <Button key={text} onPress={onPress} style={styles.more}>
                 {text}
@@ -69,6 +69,7 @@ const themedStyles = (theme: Theme) =>
     more: {
       marginLeft: 10,
     },
+    options: { flexDirection: 'row' },
   });
 
 export default RequestList;
