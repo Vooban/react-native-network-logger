@@ -1,6 +1,6 @@
 {
-  "name": "@vooban/react-native-network-logger",
-  "version": "1.14.2-canary6",
+  "name": "react-native-network-logger",
+  "version": "1.15.0-canary1",
   "description": "An HTTP traffic monitor for React Native with zero dependencies",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
