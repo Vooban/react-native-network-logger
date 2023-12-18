@@ -13,6 +13,7 @@ import Unmounted from './Unmounted';
 interface Props {
   theme?: ThemeName | DeepPartial<Theme>;
   sort?: 'asc' | 'desc';
+  maxRows?: number;
 }
 
 const sortRequests = (requests: NetworkRequestInfo[], sort: 'asc' | 'desc') => {
@@ -22,7 +23,11 @@ const sortRequests = (requests: NetworkRequestInfo[], sort: 'asc' | 'desc') => {
   return [...requests];
 };
 
-const NetworkLogger: React.FC<Props> = ({ theme = 'light', sort = 'desc' }) => {
+const NetworkLogger: React.FC<Props> = ({
+  maxRows,
+  theme = 'light',
+  sort = 'desc',
+}) => {
   const [requests, setRequests] = useState(
     sortRequests(logger.getRequests(), sort)
   );
@@ -88,7 +93,7 @@ const NetworkLogger: React.FC<Props> = ({ theme = 'light', sort = 'desc' }) => {
         text: paused ? 'Resume' : 'Pause',
         onPress: () => {
           setPaused((prev: boolean) => {
-            logger.paused = !prev;
+            logger.onPausedChange(!prev);
             return !prev;
           });
         },
@@ -105,8 +110,10 @@ const NetworkLogger: React.FC<Props> = ({ theme = 'light', sort = 'desc' }) => {
   }, [paused, getHar]);
 
   const requestsInfo = useMemo(() => {
-    return requests.map((_request) => _request.toRow());
-  }, [requests]);
+    return requests
+      .slice(0, maxRows ?? requests.length)
+      .map((_request) => _request.toRow());
+  }, [requests, maxRows]);
 
   return (
     <ThemeContext.Provider value={theme}>

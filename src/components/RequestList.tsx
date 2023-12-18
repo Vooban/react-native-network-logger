@@ -53,7 +53,11 @@ const RequestList: React.FC<Props> = ({
         )}
         data={filteredRequests}
         renderItem={({ item }) => (
-          <ResultItem request={item} onPress={() => onPressItem(item.id)} />
+          <ResultItem
+            key={item.id}
+            request={item}
+            onPress={() => onPressItem(item.id)}
+          />
         )}
       />
     </View>

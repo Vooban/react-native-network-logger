@@ -13,7 +13,8 @@ type XHR = {
 
 export default class Logger {
   private requests: NetworkRequestInfo[] = [];
-  private xhrIdMap: { [key: number]: number } = {};
+  private pausedRequests: NetworkRequestInfo[] = [];
+  private xhrIdMap: Map<number, () => number> = new Map();
   private maxRequests: number = 500;
   private ignoredHosts: Set<string> | undefined;
   private ignoredUrls: Set<string> | undefined;
@@ -22,7 +23,9 @@ export default class Logger {
   public paused = false;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  callback = (requests: any[]) => {};
+  callback = (requests: any[]) => {
+    // noop
+  };
 
   setCallback = (callback: any) => {
     this.callback = callback;
@@ -30,8 +33,9 @@ export default class Logger {
 
   private getRequest = (xhrIndex?: number) => {
     if (xhrIndex === undefined) return undefined;
-    const requestIndex = this.requests.length - this.xhrIdMap[xhrIndex] - 1;
-    return this.requests[requestIndex];
+    if (!this.xhrIdMap.has(xhrIndex)) return undefined;
+    const index = this.xhrIdMap.get(xhrIndex)!();
+    return (this.paused ? this.pausedRequests : this.requests)[index];
   };
 
   private updateRequest = (
@@ -44,14 +48,6 @@ export default class Logger {
   };
 
   private openCallback = (method: RequestMethod, url: string, xhr: XHR) => {
-    xhr._index = nextXHRId++;
-    const xhrIndex = this.requests.length;
-    this.xhrIdMap[xhr._index] = xhrIndex;
-
-    if (this.paused) {
-      return;
-    }
-
     if (this.ignoredHosts) {
       const host = extractHost(url);
       if (host && this.ignoredHosts.has(host)) {
@@ -71,18 +67,42 @@ export default class Logger {
       }
     }
 
+    xhr._index = nextXHRId++;
+    this.xhrIdMap.set(xhr._index, () => {
+      return (this.paused ? this.pausedRequests : this.requests).findIndex(
+        (r) => r.id === `${xhr._index}`
+      );
+    });
+
     const newRequest = new NetworkRequestInfo(
-      `${nextXHRId}`,
+      `${xhr._index}`,
       'XMLHttpRequest',
       method,
       url
     );
 
-    if (this.requests.length >= this.maxRequests) {
-      this.requests.pop();
+    if (this.paused) {
+      this.pausedRequests.push(newRequest);
+    } else {
+      this.requests.unshift(newRequest);
+      if (this.requests.length > this.maxRequests) {
+        this.requests.pop();
+      }
     }
+  };
 
-    this.requests.unshift(newRequest);
+  onPausedChange = (paused: boolean) => {
+    this.paused = paused;
+    console.log('paused', paused, this.pausedRequests.length);
+    if (!paused) {
+      this.pausedRequests.forEach((request) => {
+        this.requests.unshift(request);
+      });
+      this.pausedRequests = [];
+      while (this.requests.length > this.maxRequests) {
+        this.requests.pop();
+      }
+    }
   };
 
   private requestHeadersCallback = (

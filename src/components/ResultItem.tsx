@@ -47,6 +47,7 @@ const ResultItem: React.FC<Props> = ({ style, request, onPress }) => {
   const pad = (num: number) => `0${num}`.slice(-2);
 
   const getTime = (time: number) => {
+    if (time === 0) return '';
     const date = new Date(time);
     const hours = pad(date.getHours());
     const minutes = pad(date.getMinutes());
@@ -93,17 +94,6 @@ const ResultItem: React.FC<Props> = ({ style, request, onPress }) => {
           {request.url}
         </Text>
         <View style={styles.query}>
-          {request.query && (
-            <View style={styles.gqlOperation}>
-              <Text
-                style={[styles.text, styles.gqlText]}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {request.query}
-              </Text>
-            </View>
-          )}
           {gqlOperation && (
             <View style={styles.gqlOperation}>
               <Text style={[styles.text, styles.gqlText]}>

@@ -29,14 +29,7 @@ export type StartNetworkLoggingOptions = {
 
 export type NetworkRequestInfoRow = Pick<
   NetworkRequestInfo,
-  | 'url'
-  | 'gqlOperation'
-  | 'id'
-  | 'method'
-  | 'status'
-  | 'duration'
-  | 'startTime'
-  | 'query'
+  'url' | 'gqlOperation' | 'id' | 'method' | 'status' | 'duration' | 'startTime'
 >;
 
 export type DeepPartial<T> = {
