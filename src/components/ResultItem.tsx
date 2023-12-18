@@ -93,15 +93,13 @@ const ResultItem: React.FC<Props> = ({ style, request, onPress }) => {
         >
           {request.url}
         </Text>
-        <View style={styles.query}>
-          {gqlOperation && (
-            <View style={styles.gqlOperation}>
-              <Text style={[styles.text, styles.gqlText]}>
-                gql: {gqlOperation}
-              </Text>
-            </View>
-          )}
-        </View>
+        {gqlOperation && (
+          <View style={styles.gqlOperation}>
+            <Text style={[styles.text, styles.gqlText]}>
+              gql: {gqlOperation}
+            </Text>
+          </View>
+        )}
       </View>
     </MaybeTouchable>
   );
@@ -168,7 +166,6 @@ const themedStyles = (theme: Theme) =>
       color: theme.colors.onSecondary,
       fontSize: 12,
     },
-    query: { flexDirection: 'row' },
   });
 
 export default ResultItem;
