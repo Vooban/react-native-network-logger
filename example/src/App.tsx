@@ -16,40 +16,62 @@ import NetworkLogger, {
 } from 'react-native-network-logger';
 import { getRates } from './apolloClient';
 
-export default function App() {
-  const formData = new FormData();
-  formData.append('test', 'hello');
-  const makeRequest = () => {
+const formData = new FormData();
+formData.append('test', 'hello');
+
+const fakesRequests = [
+  async () =>
     fetch(
       'https://postman-echo.com/post?query=some really long query that goes onto multiple lines so we can test what happens',
       {
         method: 'POST',
         body: JSON.stringify({ test: 'hello' }),
       }
-    );
+    ),
+  async () =>
     fetch('https://postman-echo.com/post?formData', {
       method: 'POST',
       body: formData,
-    });
-    fetch('https://httpstat.us/200', { method: 'HEAD' });
+    }),
+  async () => fetch('https://httpstat.us/200', { method: 'HEAD' }),
+  async () =>
     fetch('https://postman-echo.com/put', {
       method: 'PUT',
       body: JSON.stringify({ test: 'hello' }),
-    });
-    fetch('https://httpstat.us/302');
-    fetch('https://httpstat.us/400');
-    fetch('https://httpstat.us/500');
-    // Non JSON response
-    fetch('https://postman-echo.com/stream/2');
+    }),
+  async () => fetch('https://httpstat.us/200'),
+  async () => fetch('https://httpstat.us/204'),
+  async () => fetch('https://httpstat.us/302'),
+  async () => fetch('https://httpstat.us/400'),
+  async () => fetch('https://httpstat.us/401'),
+  async () => fetch('https://httpstat.us/403'),
+  async () => fetch('https://httpstat.us/404'),
+  async () => fetch('https://httpstat.us/500'),
+  async () => fetch('https://httpstat.us/503'),
+  async () => fetch('https://httpstat.us/504'),
 
-    getRates();
-    // Test requests that fail
-    // fetch('https://failingrequest');
+  // Non JSON response
+  async () => fetch('https://postman-echo.com/stream/2'),
+
+  async () => getRates(),
+  // Test requests that fail
+  // async () => fetch('https://failingrequest'),
+];
+
+export default function App() {
+  const maxRequests = 500;
+
+  const makeRequest = async () => {
+    await Promise.all(
+      Array.from({ length: Math.min(maxRequests, 10) }).map((_) =>
+        fakesRequests[Math.floor(Math.random() * fakesRequests.length)]()
+      )
+    );
   };
 
   startNetworkLogging({
     ignoredHosts: ['192.168.1.28', '127.0.0.1'],
-    maxRequests: 500,
+    maxRequests,
     ignoredUrls: ['https://httpstat.us/other'],
     ignoredPatterns: [/^POST http:\/\/(192|10)/],
   });

@@ -93,7 +93,6 @@ export default class Logger {
 
   onPausedChange = (paused: boolean) => {
     this.paused = paused;
-    console.log('paused', paused, this.pausedRequests.length);
     if (!paused) {
       this.pausedRequests.forEach((request) => {
         this.requests.unshift(request);
