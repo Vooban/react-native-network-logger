@@ -10,12 +10,14 @@ interface Props {
   requestsInfo: NetworkRequestInfoRow[];
   onPressItem: (item: NetworkRequestInfo['id']) => void;
   options: { text: string; onPress: () => void }[];
+  maxRows: number;
   showDetails: boolean;
 }
 
 const RequestList: React.FC<Props> = ({
   requestsInfo,
   onPressItem,
+  maxRows,
   options,
   showDetails,
 }) => {
@@ -24,14 +26,16 @@ const RequestList: React.FC<Props> = ({
   const [searchValue, onChangeSearchText] = useState('');
 
   const filteredRequests = useMemo(() => {
-    return requestsInfo.filter((request) => {
-      const value = searchValue.toLowerCase().trim();
-      return (
-        request.url.toLowerCase().includes(value) ||
-        request.gqlOperation?.toLowerCase().includes(value)
-      );
-    });
-  }, [requestsInfo, searchValue]);
+    return requestsInfo
+      .filter((request) => {
+        const value = searchValue.toLowerCase().trim();
+        return (
+          request.url.toLowerCase().includes(value) ||
+          request.gqlOperation?.toLowerCase().includes(value)
+        );
+      })
+      .slice(0, maxRows);
+  }, [requestsInfo, maxRows, searchValue]);
 
   return (
     <View style={styles.container}>

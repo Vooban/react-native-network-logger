@@ -109,8 +109,8 @@ const NetworkLogger: React.FC<Props> = ({
   }, [paused, getHar]);
 
   const requestsInfo = useMemo(() => {
-    return requests.slice(0, maxRows ?? requests.length).map((r) => r.toRow());
-  }, [requests, maxRows]);
+    return requests.map((r) => r.toRow());
+  }, [requests]);
 
   return (
     <ThemeContext.Provider value={theme}>
@@ -137,6 +137,7 @@ const NetworkLogger: React.FC<Props> = ({
                 requestsInfo={requestsInfo}
                 options={options}
                 showDetails={showDetails && !!request}
+                maxRows={maxRows ?? requests.length}
                 onPressItem={(id) => {
                   setRequest(requests.find((r) => r.id === id));
                   setShowDetails(true);
