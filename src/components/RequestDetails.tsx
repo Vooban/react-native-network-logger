@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Share,
-  TextInput,
-  Platform,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Share } from 'react-native';
 import NetworkRequestInfo from '../NetworkRequestInfo';
 import { useThemedStyles, Theme } from '../theme';
 import { backHandlerSet } from '../backHandler';
@@ -52,15 +44,15 @@ const LargeText: React.FC<{ children: string }> = ({ children }) => {
   // - on iOS, Text has a limit, not for TextInput
   // - on Android, copy paste is not allowed on a non-editable TextInput
   return (
-    <TextInput
-      style={[styles.content, styles.largeContent]}
-      multiline
-      value={children}
-      editable={Platform.OS === 'android'} // for android, make it editable to unlock copy paste; already supported on iOS
-      showSoftInputOnFocus={false} // for android only, prevents keyboard from showing on focus since it's readonly
-      caretHidden // for android only, hide the cursor since it's readonly
-      scrollEnabled
-    />
+    <View style={styles.largeContent}>
+      <ScrollView nestedScrollEnabled>
+        <View>
+          <Text style={styles.content} selectable>
+            {children}
+          </Text>
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 

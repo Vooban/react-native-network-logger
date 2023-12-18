@@ -3,7 +3,6 @@ import { View, StyleSheet, FlatList } from 'react-native';
 import NetworkRequestInfo from '../NetworkRequestInfo';
 import { useThemedStyles, Theme } from '../theme';
 import ResultItem from './ResultItem';
-import Button from './Button';
 import SearchBar from './SearchBar';
 import { NetworkRequestInfoRow } from '../types';
 
@@ -37,27 +36,17 @@ const RequestList: React.FC<Props> = ({
   return (
     <View style={styles.container}>
       {!showDetails && (
-        <SearchBar value={searchValue} onChangeText={onChangeSearchText} />
+        <SearchBar
+          value={searchValue}
+          onChangeText={onChangeSearchText}
+          options={options}
+        />
       )}
       <FlatList
         keyExtractor={(item) => item.id}
-        // eslint-disable-next-line react/no-unstable-nested-components
-        ListHeaderComponent={() => (
-          <View style={styles.options}>
-            {options.map(({ text, onPress }) => (
-              <Button key={text} onPress={onPress} style={styles.more}>
-                {text}
-              </Button>
-            ))}
-          </View>
-        )}
         data={filteredRequests}
         renderItem={({ item }) => (
-          <ResultItem
-            key={item.id}
-            request={item}
-            onPress={() => onPressItem(item.id)}
-          />
+          <ResultItem request={item} onPress={() => onPressItem(item.id)} />
         )}
       />
     </View>
@@ -70,10 +59,6 @@ const themedStyles = (theme: Theme) =>
       backgroundColor: theme.colors.background,
       flex: 1,
     },
-    more: {
-      marginLeft: 10,
-    },
-    options: { flexDirection: 'row' },
   });
 
 export default RequestList;

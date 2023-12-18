@@ -82,13 +82,6 @@ export default class NetworkRequestInfo {
     return JSON.stringify(this.parseData(data), null, 2);
   }
 
-  private parseRequestBody() {
-    if (this.requestHeaders['content-type']?.includes('application/json')) {
-      return this.parseData(this.dataSent);
-    }
-    return null;
-  }
-
   public toRow(): NetworkRequestInfoRow {
     return {
       url: this.url,
