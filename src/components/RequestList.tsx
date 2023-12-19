@@ -10,7 +10,6 @@ interface Props {
   requestsInfo: NetworkRequestInfoRow[];
   onPressItem: (item: NetworkRequestInfo['id']) => void;
   options: { text: string; onPress: () => void }[];
-  maxRows: number;
   showDetails: boolean;
   compact: boolean;
   maxRows: number;
@@ -19,7 +18,6 @@ interface Props {
 const RequestList: React.FC<Props> = ({
   requestsInfo,
   onPressItem,
-  maxRows,
   options,
   showDetails,
   compact,

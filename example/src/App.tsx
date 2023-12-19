@@ -19,7 +19,7 @@ import { getRates } from './apolloClient';
 const formData = new FormData();
 formData.append('test', 'hello');
 
-const fakesRequests = [
+const requests = [
   async () =>
     fetch(
       'https://postman-echo.com/post?query=some really long query that goes onto multiple lines so we can test what happens',
@@ -114,7 +114,7 @@ export default function App() {
         <View style={styles.navButton} />
       </View>
       {(unmountNetworkLogger && remountButton) || (
-        <NetworkLogger theme={theme} maxRows={10} />
+        <NetworkLogger theme={theme} maxRows={10} compact />
       )}
       <View style={styles.bottomView}>
         <Button
