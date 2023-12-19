@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Share,
-  TextInput,
-  Platform,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Share } from 'react-native';
 import NetworkRequestInfo from '../NetworkRequestInfo';
 import { useThemedStyles, Theme } from '../theme';
 import { backHandlerSet } from '../backHandler';
@@ -48,22 +40,9 @@ const Headers = ({
 const LargeText: React.FC<{ children: string }> = ({ children }) => {
   const styles = useThemedStyles(themedStyles);
 
-  if (Platform.OS === 'ios') {
-    /**
-     * A readonly TextInput is used because large Text blocks sometimes don't render on iOS
-     * See this issue https://github.com/facebook/react-native/issues/19453
-     * Note: Even with the fix mentioned in the comments, text with ~10,000 lines still fails to render
-     */
-    return (
-      <TextInput
-        style={[styles.content, styles.largeContent]}
-        multiline
-        editable={false}
-        value={children}
-      />
-    );
-  }
-
+  // always use TextInput for large text on both devices instead of Text:
+  // - on iOS, Text has a limit, not for TextInput
+  // - on Android, copy paste is not allowed on a non-editable TextInput
   return (
     <View style={styles.largeContent}>
       <ScrollView nestedScrollEnabled>

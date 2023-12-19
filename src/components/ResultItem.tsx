@@ -181,7 +181,7 @@ const themedStyles = (theme: Theme) =>
     },
     gqlText: {
       color: theme.colors.onSecondary,
-      fontSize: 14,
+      fontSize: 12,
     },
   });
 

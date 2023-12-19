@@ -19,7 +19,7 @@ import { getRates } from './apolloClient';
 const formData = new FormData();
 formData.append('test', 'hello');
 
-const requests = [
+const fakesRequests = [
   async () =>
     fetch(
       'https://postman-echo.com/post?query=some really long query that goes onto multiple lines so we can test what happens',
@@ -72,7 +72,7 @@ export default function App() {
 
   startNetworkLogging({
     ignoredHosts: ['192.168.1.28', '127.0.0.1'],
-    maxRequests: maxRequests,
+    maxRequests,
     ignoredUrls: ['https://httpstat.us/other'],
     ignoredPatterns: [/^POST http:\/\/(192|10)/],
   });
