@@ -34,7 +34,7 @@ const NetworkLogger: React.FC<Props> = ({
   const [request, setRequest] = useState<NetworkRequestInfo>();
   const [showDetails, _setShowDetails] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [paused, setPaused] = useState<boolean>(logger.paused);
+  const [paused, setPaused] = useState<boolean>(logger.isPaused);
 
   const setShowDetails = useCallback((shouldShow: boolean) => {
     _setShowDetails(shouldShow);
@@ -92,7 +92,7 @@ const NetworkLogger: React.FC<Props> = ({
         text: paused ? 'Resume' : 'Pause',
         onPress: () => {
           setPaused((prev: boolean) => {
-            logger.paused = !prev;
+            logger.onPausedChange(!prev);
             return !prev;
           });
         },
