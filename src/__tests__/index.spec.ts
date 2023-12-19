@@ -1,6 +1,7 @@
 import XHRInterceptor from 'react-native/Libraries/Network/XHRInterceptor';
 import { startNetworkLogging, stopNetworkLogging } from '..';
 import logger from '../loggerSingleton';
+import { LOGGER_REFRESH_RATE } from '../constant';
 
 jest.mock('react-native/Libraries/Blob/FileReader', () => ({}));
 jest.mock('react-native/Libraries/Network/XHRInterceptor', () => ({
@@ -110,7 +111,7 @@ describe('singleton logger', () => {
     // @ts-ignore
     expect(logger.requests).toEqual([]);
     // @ts-ignore
-    expect(logger.xhrIdMap).toEqual({});
+    expect(logger.xhrIdMap).toEqual(new Map());
     // @ts-ignore
     expect(logger.maxRequests).toBe(500);
     // @ts-ignore
@@ -124,16 +125,19 @@ describe('singleton logger', () => {
 
 describe('clearRequests', () => {
   it('should clear the requests', () => {
+    jest.useFakeTimers();
     logger.callback = jest.fn();
 
     // @ts-ignore
     logger.requests = ['test-request'];
 
     logger.clearRequests();
+    jest.advanceTimersByTime(LOGGER_REFRESH_RATE);
 
     expect(logger.getRequests()).toEqual([]);
     expect(logger.callback).toHaveBeenCalledTimes(1);
     expect(logger.callback).toHaveBeenCalledWith([]);
+    jest.useFakeTimers();
   });
 });
 

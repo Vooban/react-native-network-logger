@@ -48,7 +48,7 @@ const NetworkLogger: React.FC<Props> = ({
 
   useEffect(() => {
     logger.setCallback((updatedRequests: NetworkRequestInfo[]) => {
-      setRequests(updatedRequests);
+      setRequests([...updatedRequests]);
     });
 
     logger.enableXHRInterception();

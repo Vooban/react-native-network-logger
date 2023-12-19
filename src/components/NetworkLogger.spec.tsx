@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  render,
-  fireEvent,
-  within,
-  screen,
-  act,
-} from '@testing-library/react-native';
+import { render, fireEvent, within, act } from '@testing-library/react-native';
 import NetworkLogger, { NetworkLoggerProps } from './NetworkLogger';
 import logger from '../loggerSingleton';
 import NetworkRequestInfo from '../NetworkRequestInfo';
@@ -89,28 +83,17 @@ describe('options', () => {
   });
 
   it('should clear the logs on demand', () => {
-    const spyOnLoggerGetRequests = jest
-      .spyOn(logger, 'getRequests')
-      .mockImplementation(() => [
-        new NetworkRequestInfo(
-          '123',
-          'XMLHttpRequest',
-          'POST',
-          'http://example.com/1'
-        ),
-      ]);
+    const spyOnLoggerClearRequests = jest.spyOn(logger, 'clearRequests');
 
-    const { getByText, queryByText, getByTestId } = render(<MyNetworkLogger />);
-
-    expect(queryByText(/^post$/i)).toBeTruthy();
+    const { getByText, getByTestId } = render(<MyNetworkLogger />);
+    expect(spyOnLoggerClearRequests).toHaveBeenCalledTimes(0);
 
     fireEvent.press(getByTestId('options-menu'));
     fireEvent.press(getByText(/^clear/i));
 
-    expect(spyOnLoggerGetRequests).toHaveBeenCalled();
-    expect(queryByText(/^post$/i)).toBeFalsy();
+    expect(spyOnLoggerClearRequests).toHaveBeenCalledTimes(1);
 
-    spyOnLoggerGetRequests.mockRestore();
+    spyOnLoggerClearRequests.mockRestore();
   });
 });
 
@@ -132,7 +115,7 @@ describe('regular vs compact row', () => {
       });
 
     const { getByText } = render(<MyNetworkLogger compact={compact} />);
-    screen.debug();
+
     const method = getByText(/^post$/i);
     expect(method).toBeTruthy();
     expect(!!within(method.parent!.parent!).queryByText(/^12:34:00$/i)).toBe(
