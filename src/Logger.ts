@@ -266,7 +266,7 @@ export default class Logger {
     nextXHRId = 0;
     this.enabled = false;
     this.paused = false;
-    this.xhrIdMap = {};
+    this.xhrIdMap.clear();
     this.maxRequests = LOGGER_MAX_REQUESTS;
     this.ignoredHosts = undefined;
     this.ignoredUrls = undefined;

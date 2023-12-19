@@ -10,6 +10,7 @@ All changes made in this edition were pushed to the main repository as a Pull Re
 ### Features
 - [ ] Added `maxRows` to `<NetworkLogger />` to increase the list performance https://github.com/alexbrazier/react-native-network-logger/pull/91
 - [ ] Added `compact` to `<NetworkLogger />` to display more rows on the screen https://github.com/alexbrazier/react-native-network-logger/pull/92
+- [ ] Added `stopNetworkLogging()` to disable the logger when needed https://github.com/alexbrazier/react-native-network-logger/pull/93
 - [x] Added `Pause/Resume` option to be able to prevent new requests to be added to the list https://github.com/alexbrazier/react-native-network-logger/pull/77
 
 ### Improvements
