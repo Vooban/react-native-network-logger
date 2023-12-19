@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   StyleSheet,
   Button,
@@ -13,6 +13,7 @@ import NetworkLogger, {
   ThemeName,
   getBackHandler,
   startNetworkLogging,
+  stopNetworkLogging,
 } from 'react-native-network-logger';
 import { getRates } from './apolloClient';
 
@@ -70,19 +71,31 @@ export default function App() {
     );
   };
 
-  startNetworkLogging({
-    ignoredHosts: ['192.168.1.28', '127.0.0.1'],
+  const start = useCallback(() => {
+    startNetworkLogging({
+      ignoredHosts: ['192.168.1.28', '127.0.0.1'],
     maxRequests,
-    ignoredUrls: ['https://httpstat.us/other'],
-    ignoredPatterns: [/^POST http:\/\/(192|10)/],
-  });
+      ignoredUrls: ['https://httpstat.us/other'],
+      ignoredPatterns: [/^POST http:\/\/(192|10)/],
+    });
+  }, []);
+
+  useEffect(() => {
+    start();
+    return () => {
+      stopNetworkLogging();
+    };
+  }, [start]);
 
   const [theme, setTheme] = useState<ThemeName>('dark');
   const isDark = theme === 'dark';
 
   const styles = themedStyles(isDark);
 
-  const goBack = () => setUnmountNetworkLogger(true);
+  const goBack = () => {
+    stopNetworkLogging();
+    setUnmountNetworkLogger(true);
+  };
 
   const [unmountNetworkLogger, setUnmountNetworkLogger] = useState(false);
 
@@ -92,7 +105,10 @@ export default function App() {
     <View>
       <Button
         title={'Re-open the network logger'}
-        onPress={() => setUnmountNetworkLogger(false)}
+        onPress={() => {
+          setUnmountNetworkLogger(false);
+          start();
+        }}
       />
     </View>
   );
