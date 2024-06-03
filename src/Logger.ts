@@ -15,6 +15,7 @@ type XHR = {
 
 export default class Logger {
   private requests: NetworkRequestInfo[] = [];
+  private pausedRequests: NetworkRequestInfo[] = [];
   private xhrIdMap: Map<number, () => number> = new Map();
   private maxRequests: number = LOGGER_MAX_REQUESTS;
   private refreshRate: number = LOGGER_REFRESH_RATE;
@@ -48,7 +49,7 @@ export default class Logger {
     if (xhrIndex === undefined) return undefined;
     if (!this.xhrIdMap.has(xhrIndex)) return undefined;
     const index = this.xhrIdMap.get(xhrIndex)!();
-    return this.requests[index];
+    return (this.paused ? this.pausedRequests : this.requests)[index];
   };
 
   private updateRequest = (
@@ -61,10 +62,6 @@ export default class Logger {
   };
 
   private openCallback = (method: RequestMethod, url: string, xhr: XHR) => {
-    if (this.paused) {
-      return;
-    }
-
     if (this.ignoredHosts) {
       const host = extractHost(url);
       if (host && this.ignoredHosts.has(host)) {
@@ -86,7 +83,9 @@ export default class Logger {
 
     xhr._index = nextXHRId++;
     this.xhrIdMap.set(xhr._index, () => {
-      return this.requests.findIndex((r) => r.id === `${xhr._index}`);
+      return (this.paused ? this.pausedRequests : this.requests).findIndex(
+        (r) => r.id === `${xhr._index}`
+      );
     });
 
     const newRequest = new NetworkRequestInfo(
@@ -97,6 +96,11 @@ export default class Logger {
     );
 
     if (this.paused) {
+      const logsLength = this.pausedRequests.length + this.requests.length;
+      if (logsLength > this.maxRequests) {
+        if (this.requests.length > 0) this.requests.pop();
+        else this.pausedRequests.pop();
+      }
       this.pausedRequests.push(newRequest);
     } else {
       this.requests.unshift(newRequest);
@@ -235,8 +239,23 @@ export default class Logger {
 
   clearRequests = () => {
     this.requests = [];
+    this.pausedRequests = [];
     this.latestRequestUpdatedAt = 0;
     this.debouncedCallback();
+  };
+
+  onPausedChange = (paused: boolean) => {
+    if (!paused) {
+      this.pausedRequests.forEach((request) => {
+        this.requests.unshift(request);
+        if (this.requests.length > this.maxRequests) {
+          this.requests.pop();
+        }
+      });
+      this.pausedRequests = [];
+      this.debouncedCallback();
+    }
+    this.paused = paused;
   };
 
   disableXHRInterception = () => {

@@ -15,7 +15,7 @@ import NetworkLogger, {
   startNetworkLogging,
   stopNetworkLogging,
 } from 'react-native-network-logger';
-import { getRates } from './apolloClient';
+import { getHero, getRates, getUser } from './apolloClient';
 
 const formData = new FormData();
 formData.append('test', 'hello');
@@ -54,7 +54,9 @@ const requests = [
   // Non JSON response
   async () => fetch('https://postman-echo.com/stream/2'),
 
-  async () => getRates(),
+  async () => getRates(), // 405
+  async () => getHero(), // 400
+  async () => getUser(), // 200
   // Test requests that fail
   // async () => fetch('https://failingrequest'),
 ];
@@ -74,7 +76,7 @@ export default function App() {
   const start = useCallback(() => {
     startNetworkLogging({
       ignoredHosts: ['127.0.0.1'],
-      maxRequests: 20,
+      maxRequests,
       ignoredUrls: ['https://httpstat.us/other'],
       ignoredPatterns: [/^POST http:\/\/(192|10)/, /\/logs$/, /\/symbolicate$/],
     });

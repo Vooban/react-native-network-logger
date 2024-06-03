@@ -90,7 +90,7 @@ const NetworkLogger: React.FC<Props> = ({
     return [
       {
         text: paused ? 'Resume' : 'Pause',
-        onPress: () => {
+        onPress: async () => {
           setPaused((prev: boolean) => {
             logger.onPausedChange(!prev);
             return !prev;
@@ -99,7 +99,9 @@ const NetworkLogger: React.FC<Props> = ({
       },
       {
         text: 'Clear Logs',
-        onPress: () => logger.clearRequests(),
+        onPress: async () => {
+          logger.clearRequests();
+        },
       },
       {
         text: 'Export all Logs',
