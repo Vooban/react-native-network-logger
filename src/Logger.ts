@@ -15,7 +15,6 @@ type XHR = {
 
 export default class Logger {
   private requests: NetworkRequestInfo[] = [];
-  private pausedRequests: NetworkRequestInfo[] = [];
   private xhrIdMap: Map<number, () => number> = new Map();
   private maxRequests: number = LOGGER_MAX_REQUESTS;
   private refreshRate: number = LOGGER_REFRESH_RATE;
@@ -49,7 +48,7 @@ export default class Logger {
     if (xhrIndex === undefined) return undefined;
     if (!this.xhrIdMap.has(xhrIndex)) return undefined;
     const index = this.xhrIdMap.get(xhrIndex)!();
-    return (this.paused ? this.pausedRequests : this.requests)[index];
+    return this.requests[index];
   };
 
   private updateRequest = (
@@ -62,6 +61,10 @@ export default class Logger {
   };
 
   private openCallback = (method: RequestMethod, url: string, xhr: XHR) => {
+    if (this.paused) {
+      return;
+    }
+
     if (this.ignoredHosts) {
       const host = extractHost(url);
       if (host && this.ignoredHosts.has(host)) {
@@ -83,9 +86,7 @@ export default class Logger {
 
     xhr._index = nextXHRId++;
     this.xhrIdMap.set(xhr._index, () => {
-      return (this.paused ? this.pausedRequests : this.requests).findIndex(
-        (r) => r.id === `${xhr._index}`
-      );
+      return this.requests.findIndex((r) => r.id === `${xhr._index}`);
     });
 
     const newRequest = new NetworkRequestInfo(
@@ -238,29 +239,9 @@ export default class Logger {
     this.debouncedCallback();
   };
 
-  onPausedChange = (paused: boolean) => {
-    this.paused = paused;
-    if (!paused) {
-      this.pausedRequests.forEach((request) => {
-        this.requests.unshift(request);
-      });
-      this.pausedRequests = [];
-      while (this.requests.length > this.maxRequests) {
-        this.requests.pop();
-      }
-    }
-  };
-
-  // dispose in tests
-  private dispose = () => {
-    this.enabled = false;
-    nextXHRId = 0;
-    this.requests = [];
-    this.callback(this.requests);
-    this.xhrIdMap.clear();
-  };
-
   disableXHRInterception = () => {
+    if (!this.enabled) return;
+
     this.clearRequests();
 
     nextXHRId = 0;
@@ -268,6 +249,7 @@ export default class Logger {
     this.paused = false;
     this.xhrIdMap.clear();
     this.maxRequests = LOGGER_MAX_REQUESTS;
+    this.refreshRate = LOGGER_REFRESH_RATE;
     this.ignoredHosts = undefined;
     this.ignoredUrls = undefined;
     this.ignoredPatterns = undefined;
